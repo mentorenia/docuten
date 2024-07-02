@@ -1,0 +1,36 @@
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class DigitalSignatureManagerTest {
+    private DigitalSignatureManager manager;
+
+    @BeforeEach
+    void setUp() {
+        manager = new DigitalSignatureManager();
+    }
+
+    @Test
+    void testGenerateKeyPair() throws Exception {
+        String userId = "testUser";
+        manager.generateKeyPair(userId);
+        // TODO: Verify that a key pair was generated and stored
+    }
+
+    @Test
+    void testSignAndVerifyDocument() throws Exception {
+        String userId = "testUser";
+        manager.generateKeyPair(userId);
+        
+        byte[] document = "Test document".getBytes();
+        byte[] signature = manager.signDocument(userId, document);
+        
+        boolean isValid = manager.verifySignature(userId, document, signature);
+        assertTrue(isValid);
+    }
+
+    // TODO: Add more test cases to cover different scenarios
+    // TODO: Test exception handling
+    // TODO: Test with different document sizes
+    // TODO: Test key management functionalities
+}

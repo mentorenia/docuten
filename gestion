@@ -1,0 +1,46 @@
+import java.security.*;
+import java.util.HashMap;
+import java.util.Map;
+
+public class DigitalSignatureManager {
+    private Map<String, KeyPair> keyStore;
+
+    public DigitalSignatureManager() {
+        this.keyStore = new HashMap<>();
+    }
+
+    public void generateKeyPair(String userId) throws NoSuchAlgorithmException {
+        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+        keyGen.initialize(2048);
+        KeyPair keyPair = keyGen.generateKeyPair();
+        keyStore.put(userId, keyPair);
+    }
+
+    public byte[] signDocument(String userId, byte[] document) throws Exception {
+        KeyPair keyPair = keyStore.get(userId);
+        if (keyPair == null) {
+            throw new IllegalArgumentException("No key pair found for user: " + userId);
+        }
+
+        Signature signature = Signature.getInstance("SHA256withRSA");
+        signature.initSign(keyPair.getPrivate());
+        signature.update(document);
+        return signature.sign();
+    }
+
+    public boolean verifySignature(String userId, byte[] document, byte[] signatureBytes) throws Exception {
+        KeyPair keyPair = keyStore.get(userId);
+        if (keyPair == null) {
+            throw new IllegalArgumentException("No key pair found for user: " + userId);
+        }
+
+        Signature signature = Signature.getInstance("SHA256withRSA");
+        signature.initVerify(keyPair.getPublic());
+        signature.update(document);
+        return signature.verify(signatureBytes);
+    }
+
+    // TODO: Implement methods for key management, storage, and retrieval
+    // TODO: Add support for different signature algorithms
+    // TODO: Implement secure storage of private keys
+}
